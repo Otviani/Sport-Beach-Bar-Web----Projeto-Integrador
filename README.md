@@ -83,7 +83,3 @@ O painel é de acesso restrito, disponível apenas para o administrador do bar, 
 ## 👥 Autores
 
 - Vinicius
-
-## 📄 Licença
-
-Este projeto está sob a licença que você definir (ex: MIT).
