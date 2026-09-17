@@ -1,0 +1,363 @@
+/* =========================================================
+   Spot Beach Bar — folha de estilos
+   Paleta baseada na logo: laranja pôr do sol, verde-água,
+   areia clara e azul profundo da noite.
+========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrant:wght@500;600;700;800&family=Nunito+Sans:wght@400;600;700&display=swap');
+
+:root {
+  --sunset-orange: #d9711f;
+  --sunset-orange-deep: #b1500f;
+  --lagoon: #1f7a72;
+  --lagoon-dark: #0f3f3b;
+  --night: #12242b;
+  --sand: #faf3e4;
+  --sand-dim: #efe4cc;
+  --white: #ffffff;
+
+  --sidebar-w: 250px;
+  --radius-btn: 20px;
+  --transition-btn: 0.5s ease;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: 'Nunito Sans', sans-serif;
+  color: var(--night);
+  background: var(--night);
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* ---------------------------------------------------------
+   Layout geral
+--------------------------------------------------------- */
+
+.app {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ---------------------------------------------------------
+   Barra lateral
+--------------------------------------------------------- */
+
+.sidebar {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  background: linear-gradient(180deg, var(--night) 0%, var(--lagoon-dark) 100%);
+  padding: 32px 20px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 36px;
+}
+
+.sidebar__logo {
+  width: 128px;
+  height: 128px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 0 0 4px var(--sand-dim), 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+.sidebar__logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sidebar__nav {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 18px;
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 1.02rem;
+  font-weight: 600;
+  color: var(--sand);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  transition: background-color var(--transition-btn),
+              box-shadow var(--transition-btn),
+              transform var(--transition-btn),
+              border-color var(--transition-btn);
+}
+
+.nav-btn__icon {
+  font-size: 1.2rem;
+}
+
+.nav-btn:hover,
+.nav-btn:focus-visible {
+  background-color: var(--sunset-orange);
+  border-color: var(--sunset-orange);
+  box-shadow: 0 0 22px 2px rgba(255, 255, 255, 0.45);
+  transform: translateY(-2px);
+  outline: none;
+}
+
+.nav-btn.is-active {
+  background-color: var(--sunset-orange);
+  border-color: var(--sunset-orange);
+}
+
+.sidebar__footer {
+  margin-top: auto;
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 0.75rem;
+  color: rgba(250, 243, 228, 0.5);
+  text-align: center;
+}
+
+/* ---------------------------------------------------------
+   Painel principal
+--------------------------------------------------------- */
+
+.main {
+  flex: 1;
+  position: relative;
+  min-height: 100vh;
+  background-image:
+    linear-gradient(180deg, rgba(18, 36, 43, 0.55) 0%, rgba(18, 36, 43, 0.82) 78%),
+    url('assets/background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-color: var(--lagoon-dark);
+  overflow-y: auto;
+}
+
+/* Fallback visual enquanto assets/background.jpg não existe:
+   um degradê de pôr do sol na praia, na mesma paleta da logo. */
+.main--fallback-sky {
+  background-image:
+    linear-gradient(180deg, rgba(18, 36, 43, 0.35) 0%, rgba(18, 36, 43, 0.85) 80%),
+    radial-gradient(circle at 50% 18%, #ffd699 0%, #f2a544 22%, var(--sunset-orange) 42%, transparent 70%),
+    linear-gradient(180deg, #2c7a8c 0%, #1f7a72 45%, var(--sand-dim) 46%, var(--sand) 100%);
+}
+
+.page-content {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 64px 48px 80px;
+  animation: revealDown 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes revealDown {
+  from {
+    opacity: 0;
+    transform: translateY(-28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero__title {
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 800;
+  font-size: clamp(2rem, 4vw, 2.9rem);
+  color: var(--white);
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.45);
+  margin: 0 0 10px;
+}
+
+.hero__subtitle {
+  font-family: 'Nunito Sans', sans-serif;
+  font-weight: 600;
+  font-size: clamp(1.05rem, 1.6vw, 1.3rem);
+  border-left: 3px solid var(--sunset-orange);
+  padding: 10px;
+  color: var(--white);
+  margin: 0 0 48px;
+}
+
+.page-title {
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.8rem, 3.4vw, 2.5rem);
+  color: var(--sunset-orange);
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.45);
+  margin: 0 0 10px;
+}
+
+.page-subtitle {
+  font-family: 'Nunito Sans', sans-serif;
+  font-weight: 600;
+  color: var(--white);
+  margin: 0 0 40px;
+  max-width: 60ch;
+}
+
+.section-title {
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: var(--white);
+  margin: 56px 0 22px;
+}
+
+.empty-state {
+  color: var(--white);
+  opacity: 0.85;
+  font-style: italic;
+}
+
+/* ---------------------------------------------------------
+   Cartões de atrações / cardápio
+--------------------------------------------------------- */
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 26px;
+}
+
+.attraction-card {
+  background: rgba(250, 243, 228, 0.96);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.3);
+  animation: revealDown 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.attraction-card:nth-child(2) { animation-delay: 0.08s; }
+.attraction-card:nth-child(3) { animation-delay: 0.16s; }
+.attraction-card:nth-child(4) { animation-delay: 0.24s; }
+
+.attraction-card__media {
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.6rem;
+  color: var(--white);
+  background: linear-gradient(135deg, var(--lagoon-dark), var(--lagoon));
+}
+
+.attraction-card__media--shows {
+  background: linear-gradient(135deg, var(--lagoon-dark), var(--lagoon));
+}
+
+.attraction-card__media--esporte {
+  background: linear-gradient(135deg, #f2a544, var(--sunset-orange));
+}
+
+.attraction-card__media--restaurante {
+  background: linear-gradient(135deg, #8a4b2c, #c1682f);
+}
+
+.attraction-card__body {
+  padding: 18px 20px 22px;
+}
+
+.attraction-card__title {
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 700;
+  font-size: 1.08rem;
+  color: var(--sunset-orange-deep);
+  margin: 0 0 6px;
+}
+
+.attraction-card__text {
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--night);
+  margin: 0;
+}
+
+.attraction-card__price {
+  display: inline-block;
+  margin-top: 10px;
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 700;
+  color: var(--lagoon-dark);
+}
+
+/* ---------------------------------------------------------
+   Responsivo
+--------------------------------------------------------- */
+
+@media (max-width: 780px) {
+  .app {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 18px;
+    gap: 16px;
+  }
+
+  .sidebar__logo {
+    width: 56px;
+    height: 56px;
+  }
+
+  .sidebar__nav {
+    flex-direction: row;
+    flex: 1;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .nav-btn {
+    width: auto;
+    padding: 10px 14px;
+    font-size: 0.88rem;
+  }
+
+  .nav-btn__label {
+    display: none;
+  }
+
+  .sidebar__footer {
+    display: none;
+  }
+
+  .page-content {
+    padding: 40px 20px 60px;
+  }
+}
+
+/* Respeita usuários que preferem menos movimento */
+@media (prefers-reduced-motion: reduce) {
+  .page-content,
+  .attraction-card,
+  .nav-btn {
+    animation: none !important;
+    transition: none !important;
+  }
+}

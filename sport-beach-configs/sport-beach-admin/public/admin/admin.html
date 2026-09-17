@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel do administrador — Spot Beach Bar</title>
+  <link rel="stylesheet" href="../home.css" />
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+
+  <!-- Tela de login -->
+  <div id="login-screen" class="login-screen">
+    <form id="login-form" class="login-card">
+      <img src="../assets/logo.jpeg" alt="Logo Spot Beach Bar" class="login-card__logo" />
+      <h1>Painel do administrador</h1>
+      <p class="login-card__hint">Área restrita — apenas para a equipe do Spot Beach.</p>
+      <label class="field">
+        Senha
+        <input type="password" id="password" required autofocus />
+      </label>
+      <button type="submit" class="btn">Entrar</button>
+      <p class="form-error" id="login-error"></p>
+    </form>
+  </div>
+
+  <!-- Painel (só aparece depois do login) -->
+  <div id="admin-screen" class="admin-screen hidden">
+    <header class="admin-header">
+      <div class="admin-header__brand">
+        <img src="../assets/logo.jpeg" alt="Logo" class="admin-header__logo" />
+        <h1>Spot Beach — Painel do administrador</h1>
+      </div>
+      <button id="logout-btn" class="btn btn--ghost">Sair</button>
+    </header>
+
+    <nav class="admin-tabs">
+      <button class="admin-tab is-active" data-tab="inicio">🏠 Início</button>
+      <button class="admin-tab" data-tab="pratos">🍽️ Pratos</button>
+      <button class="admin-tab" data-tab="bebidas">🥤 Bebidas</button>
+      <button class="admin-tab" data-tab="esportes">🏐 Esportes e Lazer</button>
+      <button class="admin-tab" data-tab="shows">🎤 Shows e Eventos</button>
+      <button class="admin-tab" data-tab="localizacao">🗺️ Localização</button>
+    </nav>
+
+    <!-- Aba: Início (galeria do espaço) -->
+    <section id="tab-inicio" class="admin-panel">
+      <form id="espaco-form" class="admin-form" enctype="multipart/form-data" data-category="espaco">
+        <input type="hidden" id="espaco-id" />
+        <h2 id="espaco-form-title">Nova foto do espaço</h2>
+
+        <label class="field">
+          Título
+          <input type="text" id="espaco-name" placeholder="Ex: Deck à beira-mar" required />
+        </label>
+
+        <label class="field">
+          Descrição
+          <textarea id="espaco-description" rows="3" placeholder="Uma breve descrição do que aparece na foto"></textarea>
+        </label>
+
+        <label class="field">
+          Imagem
+          <input type="file" id="espaco-image" accept="image/*" />
+        </label>
+
+        <div class="admin-form__actions">
+          <button type="submit" class="btn">Salvar foto</button>
+          <button type="button" id="espaco-cancel" class="btn btn--ghost hidden">Cancelar edição</button>
+        </div>
+        <p class="form-error" id="espaco-form-error"></p>
+      </form>
+
+      <div class="admin-list-wrap">
+        <h3>Fotos do espaço cadastradas</h3>
+        <p class="admin-hint">Isso é o que aparece na página inicial do site (Início).</p>
+        <div id="espacos-list" class="admin-list"></div>
+      </div>
+    </section>
+
+    <!-- Aba: Pratos -->
+    <section id="tab-pratos" class="admin-panel hidden">
+      <form id="prato-form" class="admin-form" enctype="multipart/form-data" data-category="prato">
+        <input type="hidden" id="prato-id" />
+        <h2 id="prato-form-title">Novo prato</h2>
+
+        <label class="field">
+          Nome do prato
+          <input type="text" id="prato-name" required />
+        </label>
+
+        <label class="field">
+          Descrição
+          <textarea id="prato-description" rows="3"></textarea>
+        </label>
+
+        <label class="field">
+          Preço (R$)
+          <input type="text" id="prato-price" placeholder="Ex: 49,90" />
+        </label>
+
+        <label class="field">
+          Imagem
+          <input type="file" id="prato-image" accept="image/*" />
+        </label>
+
+        <div class="admin-form__actions">
+          <button type="submit" class="btn">Salvar prato</button>
+          <button type="button" id="prato-cancel" class="btn btn--ghost hidden">Cancelar edição</button>
+        </div>
+        <p class="form-error" id="prato-form-error"></p>
+      </form>
+
+      <div class="admin-list-wrap">
+        <h3>Pratos cadastrados</h3>
+        <div id="pratos-list" class="admin-list"></div>
+      </div>
+    </section>
+
+    <!-- Aba: Bebidas -->
+    <section id="tab-bebidas" class="admin-panel hidden">
+      <form id="bebida-form" class="admin-form" enctype="multipart/form-data" data-category="bebida">
+        <input type="hidden" id="bebida-id" />
+        <h2 id="bebida-form-title">Nova bebida</h2>
+
+        <label class="field">
+          Nome da bebida
+          <input type="text" id="bebida-name" required />
+        </label>
+
+        <label class="field">
+          Descrição
+          <textarea id="bebida-description" rows="3"></textarea>
+        </label>
+
+        <label class="field">
+          Preço (R$)
+          <input type="text" id="bebida-price" placeholder="Ex: 24,90" />
+        </label>
+
+        <label class="field">
+          Imagem
+          <input type="file" id="bebida-image" accept="image/*" />
+        </label>
+
+        <div class="admin-form__actions">
+          <button type="submit" class="btn">Salvar bebida</button>
+          <button type="button" id="bebida-cancel" class="btn btn--ghost hidden">Cancelar edição</button>
+        </div>
+        <p class="form-error" id="bebida-form-error"></p>
+      </form>
+
+      <div class="admin-list-wrap">
+        <h3>Bebidas cadastradas</h3>
+        <div id="bebidas-list" class="admin-list"></div>
+      </div>
+    </section>
+
+    <!-- Aba: Esportes e Lazer (agenda da quadra) -->
+    <section id="tab-esportes" class="admin-panel admin-panel--single">
+      <form id="schedule-form" class="admin-form admin-form--wide">
+        <h2>Agenda da quadra</h2>
+        <p class="admin-hint">Marque os dias em que a quadra fica disponível e informe o horário de cada um.</p>
+
+        <div id="schedule-fields" class="schedule-fields"></div>
+
+        <div class="admin-form__actions">
+          <button type="submit" class="btn">Salvar agenda</button>
+        </div>
+        <p class="form-error" id="schedule-form-error"></p>
+        <p class="form-success" id="schedule-form-success"></p>
+      </form>
+    </section>
+
+    <!-- Aba: Shows e Eventos -->
+    <section id="tab-shows" class="admin-panel hidden">
+      <form id="show-form" class="admin-form" enctype="multipart/form-data">
+        <input type="hidden" id="show-id" />
+        <h2 id="show-form-title">Novo show</h2>
+
+        <label class="field">
+          Nome do evento
+          <input type="text" id="show-title" placeholder="Ex: Sunset Session" required />
+        </label>
+
+        <label class="field">
+          Quem vai se apresentar
+          <input type="text" id="show-artist" placeholder="Ex: Banda Maré Alta" required />
+        </label>
+
+        <label class="field">
+          Data do show
+          <input type="date" id="show-date" required />
+        </label>
+
+        <label class="field">
+          Imagem (cartaz / foto)
+          <input type="file" id="show-image" accept="image/*" />
+        </label>
+
+        <div class="admin-form__actions">
+          <button type="submit" class="btn">Salvar show</button>
+          <button type="button" id="show-cancel" class="btn btn--ghost hidden">Cancelar edição</button>
+        </div>
+        <p class="form-error" id="show-form-error"></p>
+      </form>
+
+      <div class="admin-list-wrap">
+        <h3>Shows cadastrados</h3>
+        <p class="admin-hint">Shows com data no passado somem sozinhos do site — mas continuam aqui até você excluir.</p>
+        <div id="shows-list" class="admin-list"></div>
+      </div>
+    </section>
+
+    <!-- Aba: Localização -->
+    <section id="tab-localizacao" class="admin-panel admin-panel--single hidden">
+      <form id="location-form" class="admin-form admin-form--wide">
+        <h2>Localização do bar</h2>
+        <p class="admin-hint">As coordenadas (latitude/longitude) definem onde o marcador aparece no mapa da página "Localização". Você pode pegar essas coordenadas clicando com o botão direito no local certo no Google Maps.</p>
+
+        <label class="field">
+          Endereço (texto exibido no site)
+          <input type="text" id="location-address" placeholder="Ex: Av. Beira Mar, 123 — Centro" required />
+        </label>
+
+        <label class="field">
+          Latitude
+          <input type="text" id="location-lat" placeholder="Ex: -20.5386" required />
+        </label>
+
+        <label class="field">
+          Longitude
+          <input type="text" id="location-lng" placeholder="Ex: -47.4008" required />
+        </label>
+
+        <label class="field">
+          Descrição adicional (opcional)
+          <textarea id="location-description" rows="3" placeholder="Referências, estacionamento, etc."></textarea>
+        </label>
+
+        <div class="admin-form__actions">
+          <button type="submit" class="btn">Salvar localização</button>
+        </div>
+        <p class="form-error" id="location-form-error"></p>
+        <p class="form-success" id="location-form-success"></p>
+      </form>
+    </section>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>

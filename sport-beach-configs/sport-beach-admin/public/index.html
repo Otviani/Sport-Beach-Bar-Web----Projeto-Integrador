@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spot Beach Bar</title>
+  <link rel="stylesheet" href="home.css" />
+  <link rel="icon" href="./assets/favicon.ico">
+</head>
+<body>
+  <div class="app">
+
+    <aside class="sidebar">
+      <div class="sidebar__logo">
+        <img src="assets/logo.jpeg" alt="Logo Spot Beach Bar" />
+      </div>
+
+      <nav class="sidebar__nav">
+        <a class="nav-btn is-active" href="index.html">
+          <span class="nav-btn__icon">🏠</span>
+          <span class="nav-btn__label">Início</span>
+        </a>
+        <a class="nav-btn" href="pratos.html">
+          <span class="nav-btn__icon">🍽️</span>
+          <span class="nav-btn__label">Pratos mais vendidos</span>
+        </a>
+        <a class="nav-btn" href="bebidas.html">
+          <span class="nav-btn__icon">🥤</span>
+          <span class="nav-btn__label">Bebidas mais vendidas</span>
+        </a>
+        <a class="nav-btn" href="esportes_lazer.html">
+          <span class="nav-btn__icon">🏐</span>
+          <span class="nav-btn__label">Esportes e Lazer</span>
+        </a>
+        <a class="nav-btn" href="shows_eventos.html">
+          <span class="nav-btn__icon">🎤</span>
+          <span class="nav-btn__label">Shows e Eventos</span>
+        </a>
+        <a class="nav-btn" href="localizacao.html">
+          <span class="nav-btn__icon">🗺️</span>
+          <span class="nav-btn__label">Localização</span>
+        </a>
+      </nav>
+
+      <p class="sidebar__footer">Sport Beach Bar</p>
+    </aside>
+
+    <main class="main main--fallback-sky">
+      <div class="page-content">
+        <h1 class="hero__title">Conheça nosso espaço</h1>
+        <p class="hero__subtitle">Venha viver momentos inesquecíveis em um ambiente feito para relaxar, se divertir e aproveitar o melhor da praia.</p>
+
+        <div class="card-grid" id="espaco-grid">
+          <p class="empty-state">Carregando fotos do espaço...</p>
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+  <script src="js/site.js"></script>
+  <script>
+    loadItems('espaco', 'espaco-grid', '🏖️');
+  </script>
+</body>
+</html>

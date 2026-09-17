@@ -1,0 +1,53 @@
+/* =========================================================
+   bebidas.css — estilos específicos da página
+   "Bebidas mais vendidas". Depende de styles.css (base).
+========================================================= */
+
+@import url('home.css');
+
+/* Acento da página: tons de água/verão, ligados aos drinks gelados */
+.page--bebidas .page-title {
+  color: var(--white);
+  text-shadow: 0 0 18px rgba(31, 122, 114, 0.65), 0 2px 14px rgba(0, 0, 0, 0.45);
+}
+
+.page--bebidas .page-subtitle {
+  border-left: 3px solid var(--lagoon);
+  padding-left: 14px;
+}
+
+/* Selo "gelado" no primeiro drink da lista */
+.page--bebidas .attraction-card:first-child {
+  position: relative;
+}
+
+.page--bebidas .attraction-card:first-child::after {
+  content: 'Favorito da casa';
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: var(--lagoon);
+  color: var(--white);
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  padding: 5px 12px;
+  border-radius: 999px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+/* Leve efeito "gelo" no fundo dos cartões desta página */
+.page--bebidas .attraction-card {
+  background:
+    linear-gradient(180deg, rgba(31, 122, 114, 0.06), rgba(31, 122, 114, 0) 40%),
+    rgba(250, 243, 228, 0.96);
+}
+
+/* Preço em destaque com fundo suave, tom água */
+.page--bebidas .attraction-card__price {
+  display: inline-block;
+  background: rgba(31, 122, 114, 0.14);
+  color: var(--lagoon-dark);
+  padding: 4px 10px;
+  border-radius: 8px;
+}

@@ -1,0 +1,381 @@
+/* =========================================================
+   admin.css — estilos do painel de administrador.
+   Depende das variáveis definidas em styles.css (../styles.css).
+========================================================= */
+
+body {
+  background: var(--night);
+}
+
+.hidden {
+  display: none !important;
+}
+
+.btn {
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: white;
+  background: var(--sunset-orange);
+  border: none;
+  border-radius: 14px;
+  padding: 12px 22px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn:hover {
+  background: var(--sunset-orange-deep);
+  transform: translateY(-1px);
+}
+
+.btn--ghost {
+  background: transparent;
+  border: 2px solid var(--sunset-orange);
+  color: var(--sunset-orange);
+}
+
+.btn--ghost:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.btn--danger {
+  background: #a3311a;
+}
+
+.btn--danger:hover {
+  background: #7e2513;
+}
+
+.form-error {
+  color: #ff8f7a;
+  font-size: 0.88rem;
+  min-height: 1.2em;
+  margin: 10px 0 0;
+}
+
+/* ---------------------------------------------------------
+   Tela de login
+--------------------------------------------------------- */
+
+.login-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background:
+    linear-gradient(180deg, rgba(18, 36, 43, 0.55) 0%, rgba(18, 36, 43, 0.9) 100%),
+    radial-gradient(circle at 50% 15%, #ffd699 0%, #f2a544 22%, var(--sunset-orange) 42%, transparent 70%),
+    linear-gradient(180deg, #2c7a8c 0%, #1f7a72 45%, var(--sand-dim) 46%, var(--sand) 100%);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 360px;
+  background: var(--sand);
+  border-radius: 20px;
+  padding: 36px 32px 28px;
+  text-align: center;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.35);
+}
+
+.login-card__logo {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto 16px;
+}
+
+.login-card h1 {
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 1.3rem;
+  color: var(--lagoon-dark);
+  margin: 0 0 6px;
+}
+
+.login-card__hint {
+  font-size: 0.85rem;
+  color: #5b5142;
+  margin: 0 0 22px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+  font-family: 'Nunito Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--night);
+  margin-bottom: 16px;
+}
+
+.field input,
+.field textarea {
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 0.95rem;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #d8cba8;
+  background: var(--white);
+  color: var(--night);
+}
+
+.field input:focus,
+.field textarea:focus {
+  outline: 2px solid var(--sunset-orange);
+  outline-offset: 1px;
+}
+
+.login-card .btn {
+  width: 100%;
+}
+
+/* ---------------------------------------------------------
+   Painel principal
+--------------------------------------------------------- */
+
+.admin-screen {
+  min-height: 100vh;
+  padding: 28px 32px 60px;
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.admin-header__brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.admin-header__logo {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.admin-header h1 {
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 1.2rem;
+  color: var(--white);
+  margin: 0;
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.admin-tab {
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--sand);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 10px 18px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.admin-tab:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.admin-tab.is-active {
+  background: var(--sunset-orange);
+  border-color: var(--sunset-orange);
+  color: var(--white);
+}
+
+.admin-panel {
+  display: grid;
+  grid-template-columns: minmax(260px, 340px) 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+.admin-panel--single {
+  display: block;
+}
+
+.admin-form--wide {
+  max-width: 520px;
+}
+
+.form-success {
+  color: #4a9d6a;
+  font-size: 0.88rem;
+  min-height: 1.2em;
+  margin: 10px 0 0;
+}
+
+.schedule-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.schedule-field-row {
+  display: grid;
+  grid-template-columns: 110px auto 1fr;
+  align-items: center;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 10px;
+  padding: 8px 12px;
+}
+
+.schedule-field-row__day {
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 700;
+  color: var(--lagoon-dark);
+}
+
+.schedule-field-row label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--night);
+  margin: 0;
+}
+
+.schedule-field-row input[type="text"] {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #d8cba8;
+  font-family: 'Nunito Sans', sans-serif;
+}
+
+.admin-form {
+  background: var(--sand);
+  border-radius: 18px;
+  padding: 22px 22px 18px;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.25);
+}
+
+.admin-form h2 {
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 1.1rem;
+  color: var(--lagoon-dark);
+  margin: 0 0 16px;
+}
+
+.admin-form textarea {
+  resize: vertical;
+}
+
+.admin-form__actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.admin-list-wrap h3 {
+  font-family: 'Baloo 2', sans-serif;
+  color: var(--white);
+  margin: 0 0 6px;
+}
+
+.admin-hint {
+  color: rgba(250, 243, 228, 0.7);
+  font-size: 0.85rem;
+  margin: 0 0 16px;
+}
+
+.admin-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-list-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(250, 243, 228, 0.95);
+  border-radius: 14px;
+  padding: 12px 14px;
+}
+
+.admin-list-item__thumb {
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--sand-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.admin-list-item__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-list-item__title {
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 700;
+  color: var(--night);
+  margin: 0 0 2px;
+}
+
+.admin-list-item__meta {
+  font-size: 0.82rem;
+  color: #5b5142;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-list-item__actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.admin-list-item__actions button {
+  font-size: 0.82rem;
+  padding: 8px 14px;
+  border-radius: 10px;
+}
+
+.admin-empty {
+  color: rgba(250, 243, 228, 0.6);
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 760px) {
+  .admin-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-screen {
+    padding: 20px 16px 48px;
+  }
+}

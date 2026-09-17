@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pratos mais vendidos — Spot Beach Bar</title>
+  <link rel="stylesheet" href="pratos.css" />
+  <link rel="icon" href="./assets/favicon.ico">
+</head>
+<body class="page--pratos">
+  <div class="app">
+
+    <aside class="sidebar">
+      <div class="sidebar__logo">
+        <img src="assets/logo.jpeg" alt="Logo Spot Beach Bar" />
+      </div>
+
+      <nav class="sidebar__nav">
+        <a class="nav-btn" href="index.html">
+          <span class="nav-btn__icon">🏠</span>
+          <span class="nav-btn__label">Início</span>
+        </a>
+        <a class="nav-btn is-active" href="pratos.html">
+          <span class="nav-btn__icon">🍽️</span>
+          <span class="nav-btn__label">Pratos mais vendidos</span>
+        </a>
+        <a class="nav-btn" href="bebidas.html">
+          <span class="nav-btn__icon">🥤</span>
+          <span class="nav-btn__label">Bebidas mais vendidas</span>
+        </a>
+        <a class="nav-btn" href="esportes_lazer.html">
+          <span class="nav-btn__icon">🏐</span>
+          <span class="nav-btn__label">Esportes e Lazer</span>
+        </a>
+        <a class="nav-btn" href="shows_eventos.html">
+          <span class="nav-btn__icon">🎤</span>
+          <span class="nav-btn__label">Shows e Eventos</span>
+        </a>
+        <a class="nav-btn" href="localizacao.html">
+          <span class="nav-btn__icon">🗺️</span>
+          <span class="nav-btn__label">Localização</span>
+        </a>
+      </nav>
+
+      <p class="sidebar__footer">Spot Beach Bar</p>
+    </aside>
+
+    <main class="main main--fallback-sky">
+      <div class="page-content">
+        <h1 class="page-title">Pratos mais vendidos</h1>
+        <p class="page-subtitle">Os favoritos da casa, direto da cozinha para a sua mesa.</p>
+
+        <div class="card-grid" id="pratos-grid">
+          <p class="empty-state">Carregando pratos...</p>
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+  <script src="js/site.js"></script>
+  <script>
+    loadItems('prato', 'pratos-grid', '🍽️');
+  </script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+/* =========================================================
+   shows_eventos.css — estilos específicos da página
+   "Shows e Eventos". Depende de styles.css (base).
+========================================================= */
+
+@import url('home.css');
+
+.page--shows .page-title {
+  color: var(--white);
+  text-shadow: 0 0 18px rgba(217, 113, 31, 0.55), 0 2px 14px rgba(0, 0, 0, 0.45);
+}
+
+.page--shows .page-subtitle {
+  border-left: 3px solid var(--sunset-orange);
+  padding-left: 14px;
+}
+
+.page--shows .attraction-card:first-child {
+  position: relative;
+}
+
+.page--shows .attraction-card:first-child::after {
+  content: 'Próximo';
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: var(--sunset-orange);
+  color: var(--white);
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  padding: 5px 12px;
+  border-radius: 999px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}

@@ -1,0 +1,51 @@
+/* =========================================================
+   pratos.css — estilos específicos da página
+   "Pratos mais vendidos". Depende de styles.css (base).
+========================================================= */
+
+@import url('home.css');
+
+/* Acento da página: tons terrosos, ligados à cozinha/grelha */
+.page--pratos .page-title {
+  color: var(--white);
+}
+
+.page--pratos .page-subtitle {
+  border-left: 3px solid var(--sunset-orange);
+  padding-left: 14px;
+}
+
+/* Selo "mais vendido" no primeiro prato da lista */
+.page--pratos .attraction-card:first-child {
+  position: relative;
+}
+
+.page--pratos .attraction-card:first-child::after {
+  content: 'Mais pedido';
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: var(--sunset-orange);
+  color: var(--white);
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  padding: 5px 12px;
+  border-radius: 999px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+/* Textura sutil de "chapa quente" no fundo dos cartões desta página */
+.page--pratos .attraction-card {
+  background:
+    linear-gradient(180deg, rgba(217, 113, 31, 0.05), rgba(217, 113, 31, 0) 40%),
+    rgba(250, 243, 228, 0.96);
+}
+
+/* Preço em destaque com fundo suave */
+.page--pratos .attraction-card__price {
+  display: inline-block;
+  background: rgba(217, 113, 31, 0.12);
+  padding: 4px 10px;
+  border-radius: 8px;
+}

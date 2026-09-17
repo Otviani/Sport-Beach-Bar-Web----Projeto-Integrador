@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Localização — Spot Beach Bar</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="localizacao.css" />
+  <link rel="icon" href="./assets/favicon.ico">
+</head>
+<body class="page--localizacao">
+  <div class="app">
+
+    <aside class="sidebar">
+      <div class="sidebar__logo">
+        <img src="assets/logo.jpeg" alt="Logo Spot Beach Bar" />
+      </div>
+
+      <nav class="sidebar__nav">
+        <a class="nav-btn" href="index.html">
+          <span class="nav-btn__icon">🏠</span>
+          <span class="nav-btn__label">Início</span>
+        </a>
+        <a class="nav-btn" href="pratos.html">
+          <span class="nav-btn__icon">🍽️</span>
+          <span class="nav-btn__label">Pratos mais vendidos</span>
+        </a>
+        <a class="nav-btn" href="bebidas.html">
+          <span class="nav-btn__icon">🥤</span>
+          <span class="nav-btn__label">Bebidas mais vendidas</span>
+        </a>
+        <a class="nav-btn" href="esportes_lazer.html">
+          <span class="nav-btn__icon">🏐</span>
+          <span class="nav-btn__label">Esportes e Lazer</span>
+        </a>
+        <a class="nav-btn" href="shows_eventos.html">
+          <span class="nav-btn__icon">🎤</span>
+          <span class="nav-btn__label">Shows e Eventos</span>
+        </a>
+        <a class="nav-btn is-active" href="localizacao.html">
+          <span class="nav-btn__icon">🗺️</span>
+          <span class="nav-btn__label">Localização</span>
+        </a>
+      </nav>
+
+      <p class="sidebar__footer">Spot Beach Bar</p>
+    </aside>
+
+    <main class="main main--fallback-sky">
+      <div class="page-content">
+        <h1 class="page-title">Localização</h1>
+        <p class="page-subtitle" id="location-address">Carregando endereço...</p>
+
+        <div id="map" class="map-container"></div>
+
+        <p class="location-description" id="location-description"></p>
+      </div>
+    </main>
+
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/site.js"></script>
+  <script>
+    loadLocation('location-address', 'location-description', 'map');
+  </script>
+</body>
+</html>
