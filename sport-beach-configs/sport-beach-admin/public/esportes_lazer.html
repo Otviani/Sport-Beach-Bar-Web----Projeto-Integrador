@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Esportes e Lazer — Spot Beach Bar</title>
+  <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
   <link rel="stylesheet" href="esportes_lazer.css" />
-  <link rel="icon" href="./assets/favicon.ico">
 </head>
 <body class="page--esportes">
   <div class="app">
@@ -48,19 +48,33 @@
     <main class="main main--fallback-sky">
       <div class="page-content">
         <h1 class="page-title">Esportes e Lazer</h1>
-        <p class="page-subtitle">Confira os dias e horários em que nossa quadra de beach tênis / vôlei de praia está disponível.</p>
+        <p class="page-subtitle">Conheça nossa quadra e as modalidades que você pode jogar com a gente.</p>
 
-        <div class="schedule-table" id="schedule-table">
-          <p class="empty-state">Carregando agenda...</p>
+        <div class="card-grid" id="quadra-grid">
+          <p class="empty-state">Carregando fotos da quadra...</p>
+        </div>
+
+        <h2 class="section-title">Medidas da quadra</h2>
+        <div class="court-card">
+          <div class="court-stage" id="court-stage"></div>
+          <p class="court-area" id="court-area"></p>
+        </div>
+
+        <h2 class="section-title">Modalidades</h2>
+        <div class="card-grid" id="sports-grid">
+          <p class="empty-state">Carregando modalidades...</p>
         </div>
       </div>
     </main>
 
   </div>
 
+  <script src="js/court.js"></script>
   <script src="js/site.js"></script>
   <script>
-    loadSchedule('schedule-table');
+    loadItems('quadra', 'quadra-grid', '🏐');
+    loadCourt('court-stage', 'court-area');
+    loadSports('sports-grid');
   </script>
 </body>
 </html>
