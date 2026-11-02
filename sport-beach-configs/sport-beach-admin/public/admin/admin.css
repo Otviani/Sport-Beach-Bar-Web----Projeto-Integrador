@@ -1,7 +1,10 @@
 /* =========================================================
    admin.css — estilos do painel de administrador.
-   Depende das variáveis definidas em styles.css (../styles.css).
+   Depende das variáveis definidas em home.css (../home.css).
 ========================================================= */
+
+
+@import url('../home.css');
 
 body {
   background: var(--night);
@@ -15,7 +18,9 @@ body {
   font-family: 'Baloo 2', sans-serif;
   font-weight: 700;
   font-size: 0.95rem;
-  color: white;
+
+
+  color: var(--white);
   background: var(--sunset-orange);
   border: none;
   border-radius: 14px;
@@ -32,6 +37,8 @@ body {
 .btn--ghost {
   background: transparent;
   border: 2px solid var(--sunset-orange);
+
+
   color: var(--sunset-orange);
 }
 
@@ -224,46 +231,9 @@ body {
   font-size: 0.88rem;
   min-height: 1.2em;
   margin: 10px 0 0;
-}
 
-.schedule-fields {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 6px;
-}
 
-.schedule-field-row {
-  display: grid;
-  grid-template-columns: 110px auto 1fr;
-  align-items: center;
-  gap: 12px;
-  background: rgba(0, 0, 0, 0.04);
-  border-radius: 10px;
-  padding: 8px 12px;
-}
 
-.schedule-field-row__day {
-  font-family: 'Baloo 2', sans-serif;
-  font-weight: 700;
-  color: var(--lagoon-dark);
-}
-
-.schedule-field-row label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--night);
-  margin: 0;
-}
-
-.schedule-field-row input[type="text"] {
-  padding: 8px 10px;
-  border-radius: 8px;
-  border: 1px solid #d8cba8;
-  font-family: 'Nunito Sans', sans-serif;
 }
 
 .admin-form {
@@ -378,4 +348,97 @@ body {
   .admin-screen {
     padding: 20px 16px 48px;
   }
+}
+
+/* ---------------------------------------------------------
+   Aba Esportes e Lazer
+--------------------------------------------------------- */
+
+.admin-block {
+  margin-bottom: 40px;
+}
+
+.admin-block__title {
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 1.2rem;
+  color: var(--white);
+  margin: 0 0 14px;
+}
+
+.admin-split {
+  display: grid;
+  grid-template-columns: minmax(260px, 340px) 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+.court-stage {
+  background: linear-gradient(180deg, #2c7a8c, #1f7a72);
+  border-radius: 14px;
+  padding: 6px;
+  touch-action: none;
+}
+
+.court-stage svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.court-area {
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 700;
+  color: var(--lagoon-dark);
+  margin: 0 0 14px;
+}
+
+.sport-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.sport-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: rgba(250, 243, 228, 0.95);
+  color: var(--night);
+  border-radius: 14px;
+  padding: 12px 14px;
+}
+
+.sport-item__emoji {
+  font-size: 1.6rem;
+}
+
+.sport-item__name {
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 700;
+  display: block;
+}
+
+.sport-item__desc {
+  margin: 2px 0 0;
+  font-size: 0.85rem;
+  color: #5b5142;
+}
+
+.sport-item__remove {
+  margin-left: auto;
+  border: 0;
+  background: transparent;
+  color: #a3311a;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+@media (max-width: 760px) {
+  .admin-split {
+    grid-template-columns: 1fr;
+  }
+
+
+
 }
