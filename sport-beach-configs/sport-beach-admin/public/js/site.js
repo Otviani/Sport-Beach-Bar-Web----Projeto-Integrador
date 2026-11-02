@@ -74,22 +74,41 @@ async function loadUpcomingShows(mountId) {
   }
 }
 
-async function loadSchedule(mountId) {
+async function loadCourt(stageId, areaId) {
+  const stage = document.getElementById(stageId);
+  if (!stage) return;
+  try {
+    const res = await fetch('/api/court');
+    const court = await res.json();
+    stage.innerHTML = courtSvg(court.length, court.width, false);
+
+    const areaEl = document.getElementById(areaId);
+    if (areaEl) {
+      areaEl.textContent =
+        `${formatMeters(court.length)} m × ${formatMeters(court.width)} m — ${courtAreaText(court.length, court.width)} de areia`;
+    }
+  } catch (e) {
+    stage.innerHTML = '<p class="empty-state">Não foi possível carregar as medidas agora.</p>';
+  }
+}
+
+async function loadSports(mountId) {
   const mount = document.getElementById(mountId);
   if (!mount) return;
   try {
-    const res = await fetch('/api/schedule');
-    const schedule = await res.json();
-    mount.innerHTML = schedule.map((entry) => `
-      <div class="schedule-row ${entry.available ? '' : 'schedule-row--closed'}">
-        <span class="schedule-row__day">${escapeHtml(entry.day)}</span>
-        <span class="schedule-row__hours">
-          ${entry.available ? escapeHtml(entry.hours || 'Horário a definir') : 'Fechada'}
-        </span>
-      </div>
-    `).join('');
+    const res = await fetch('/api/sports');
+    const sports = await res.json();
+    mount.innerHTML = sports.length
+      ? sports.map((s) => `
+        <article class="attraction-card">
+          <div class="attraction-card__body">
+            <h2 class="attraction-card__title">${escapeHtml(s.emoji)} ${escapeHtml(s.name)}</h2>
+            <p class="attraction-card__text">${escapeHtml(s.description || '')}</p>
+          </div>
+        </article>`).join('')
+      : '<p class="empty-state">Nenhuma modalidade cadastrada ainda.</p>';
   } catch (e) {
-    mount.innerHTML = '<p class="empty-state">Não foi possível carregar a agenda agora.</p>';
+    mount.innerHTML = '<p class="empty-state">Não foi possível carregar as modalidades agora.</p>';
   }
 }
 
