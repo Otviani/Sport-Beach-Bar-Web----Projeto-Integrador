@@ -9,13 +9,22 @@ const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
 
-const { readDb, writeDb } = require('./db');
+const db = require('./db');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const UPLOADS_DIR = path.join(__dirname, 'uploads');
+
+// Onde as imagens enviadas ficam salvas. Por padrão, a pasta "uploads" do projeto,
+// mas dá para apontar para outro lugar com UPLOADS_DIR no .env.
+const UPLOADS_DIR = process.env.UPLOADS_DIR
+  ? path.resolve(process.env.UPLOADS_DIR)
+  : path.join(__dirname, 'uploads');
 
 if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+
+// Em hospedagens com proxy na frente, isso faz o Express
+// enxergar corretamente que a conexão é HTTPS.
+app.set('trust proxy', 1);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -24,11 +33,24 @@ app.use(session({
   secret: process.env.SESSION_SECRET || 'troque-este-segredo-no-.env',
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 1000 * 60 * 60 * 4 } // sessão dura 4h
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 4, // sessão dura 4h
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: 'auto' // cookie "seguro" só quando o acesso é por HTTPS
+  }
 }));
 
 app.use('/uploads', express.static(UPLOADS_DIR));
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Express 4 não captura erros de funções async sozinho; este helper faz isso.
+const asyncHandler = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
+
+// Data de "hoje" no fuso de Brasília (evita o show do dia sumir à noite por causa do UTC)
+function todayBR() {
+  return new Date().toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' });
+}
 
 // ---------------------------------------------------------------
 // Upload de imagens
@@ -50,9 +72,9 @@ const upload = multer({
   }
 });
 
-function deleteUploadedFile(relativePath) {
-  if (!relativePath) return;
-  const filePath = path.join(__dirname, relativePath);
+function deleteUploadedFile(imagePath) {
+  if (!imagePath) return;
+  const filePath = path.join(UPLOADS_DIR, path.basename(imagePath));
   fs.unlink(filePath, () => {}); // ignora erro se o arquivo já não existir
 }
 
@@ -90,45 +112,40 @@ app.get('/api/admin/session', (req, res) => {
 // ---------------------------------------------------------------
 // Shows (público: listar / admin: criar, editar, excluir)
 // ---------------------------------------------------------------
-app.get('/api/shows', (req, res) => {
-  const db = readDb();
-  const today = new Date().toISOString().slice(0, 10);
+app.get('/api/shows', asyncHandler(async (req, res) => {
+  const shows = await db.getShows();
+  const today = todayBR();
 
-  const upcoming = db.shows
+  const upcoming = shows
     .filter((s) => s.date >= today)
     .sort((a, b) => a.date.localeCompare(b.date));
 
-  const past = db.shows
+  const past = shows
     .filter((s) => s.date < today)
     .sort((a, b) => b.date.localeCompare(a.date));
 
   res.json({ upcoming, past });
-});
+}));
 
-app.post('/api/admin/shows', requireAdmin, upload.single('image'), (req, res) => {
+app.post('/api/admin/shows', requireAdmin, upload.single('image'), asyncHandler(async (req, res) => {
   const { title, artist, date } = req.body;
   if (!title || !artist || !date) {
     return res.status(400).json({ error: 'Preencha nome do evento, artista e data.' });
   }
 
-  const db = readDb();
-  const show = {
+  const show = await db.createShow({
     id: crypto.randomUUID(),
     title,
     artist,
     date,
-    image: req.file ? `/uploads/${req.file.filename}` : null,
-    createdAt: new Date().toISOString()
-  };
+    image: req.file ? `/uploads/${req.file.filename}` : null
+  });
 
-  db.shows.push(show);
-  writeDb(db);
   res.status(201).json(show);
-});
+}));
 
-app.put('/api/admin/shows/:id', requireAdmin, upload.single('image'), (req, res) => {
-  const db = readDb();
-  const show = db.shows.find((s) => s.id === req.params.id);
+app.put('/api/admin/shows/:id', requireAdmin, upload.single('image'), asyncHandler(async (req, res) => {
+  const show = await db.getShowById(req.params.id);
   if (!show) return res.status(404).json({ error: 'Show não encontrado.' });
 
   const { title, artist, date } = req.body;
@@ -141,57 +158,46 @@ app.put('/api/admin/shows/:id', requireAdmin, upload.single('image'), (req, res)
     show.image = `/uploads/${req.file.filename}`;
   }
 
-  writeDb(db);
-  res.json(show);
-});
+  res.json(await db.updateShow(show));
+}));
 
-app.delete('/api/admin/shows/:id', requireAdmin, (req, res) => {
-  const db = readDb();
-  const idx = db.shows.findIndex((s) => s.id === req.params.id);
-  if (idx === -1) return res.status(404).json({ error: 'Show não encontrado.' });
+app.delete('/api/admin/shows/:id', requireAdmin, asyncHandler(async (req, res) => {
+  const show = await db.getShowById(req.params.id);
+  if (!show) return res.status(404).json({ error: 'Show não encontrado.' });
 
-  const [removed] = db.shows.splice(idx, 1);
-  deleteUploadedFile(removed.image);
-  writeDb(db);
+  await db.deleteShow(show.id);
+  deleteUploadedFile(show.image);
   res.json({ ok: true });
-});
+}));
 
 // ---------------------------------------------------------------
-// Itens do cardápio: pratos e bebidas
+// Itens: pratos, bebidas e fotos do espaço
 // (público: listar / admin: criar, editar, excluir)
 // ---------------------------------------------------------------
-app.get('/api/items', (req, res) => {
-  const db = readDb();
-  const { category } = req.query;
-  const items = category ? db.items.filter((i) => i.category === category) : db.items;
-  res.json(items);
-});
+app.get('/api/items', asyncHandler(async (req, res) => {
+  res.json(await db.getItems(req.query.category));
+}));
 
-app.post('/api/admin/items', requireAdmin, upload.single('image'), (req, res) => {
+app.post('/api/admin/items', requireAdmin, upload.single('image'), asyncHandler(async (req, res) => {
   const { category, name, description, price } = req.body;
   if (!category || !name) {
     return res.status(400).json({ error: 'Preencha categoria e nome.' });
   }
 
-  const db = readDb();
-  const item = {
+  const item = await db.createItem({
     id: crypto.randomUUID(),
     category,
     name,
     description: description || '',
     price: price || '',
-    image: req.file ? `/uploads/${req.file.filename}` : null,
-    createdAt: new Date().toISOString()
-  };
+    image: req.file ? `/uploads/${req.file.filename}` : null
+  });
 
-  db.items.push(item);
-  writeDb(db);
   res.status(201).json(item);
-});
+}));
 
-app.put('/api/admin/items/:id', requireAdmin, upload.single('image'), (req, res) => {
-  const db = readDb();
-  const item = db.items.find((i) => i.id === req.params.id);
+app.put('/api/admin/items/:id', requireAdmin, upload.single('image'), asyncHandler(async (req, res) => {
+  const item = await db.getItemById(req.params.id);
   if (!item) return res.status(404).json({ error: 'Item não encontrado.' });
 
   const { name, description, price, category } = req.body;
@@ -205,60 +211,77 @@ app.put('/api/admin/items/:id', requireAdmin, upload.single('image'), (req, res)
     item.image = `/uploads/${req.file.filename}`;
   }
 
-  writeDb(db);
-  res.json(item);
-});
+  res.json(await db.updateItem(item));
+}));
 
-app.delete('/api/admin/items/:id', requireAdmin, (req, res) => {
-  const db = readDb();
-  const idx = db.items.findIndex((i) => i.id === req.params.id);
-  if (idx === -1) return res.status(404).json({ error: 'Item não encontrado.' });
+app.delete('/api/admin/items/:id', requireAdmin, asyncHandler(async (req, res) => {
+  const item = await db.getItemById(req.params.id);
+  if (!item) return res.status(404).json({ error: 'Item não encontrado.' });
 
-  const [removed] = db.items.splice(idx, 1);
-  deleteUploadedFile(removed.image);
-  writeDb(db);
+  await db.deleteItem(item.id);
+  deleteUploadedFile(item.image);
   res.json({ ok: true });
-});
-
-// Tratamento simples de erros do multer (ex: arquivo grande demais)
-app.use((err, req, res, next) => {
-  if (err) return res.status(400).json({ error: err.message });
-  next();
-});
+}));
 
 // ---------------------------------------------------------------
-// Agenda da quadra (Esportes e Lazer)
+// Quadra (Esportes e Lazer): dimensões e esportes praticados.
+// As fotos da quadra usam as rotas de itens, com category = 'quadra'.
 // ---------------------------------------------------------------
-app.get('/api/schedule', (req, res) => {
-  const db = readDb();
-  res.json(db.schedule);
-});
+const COURT_LIMITS = { length: [6, 30], width: [4, 16] }; // mesmos limites do desenho na tela
 
-app.put('/api/admin/schedule', requireAdmin, (req, res) => {
-  const { schedule } = req.body;
-  if (!Array.isArray(schedule)) {
-    return res.status(400).json({ error: 'Formato de agenda inválido.' });
+app.get('/api/court', asyncHandler(async (req, res) => {
+  res.json(await db.getCourt());
+}));
+
+app.put('/api/admin/court', requireAdmin, asyncHandler(async (req, res) => {
+  const length = Number(req.body.length);
+  const width = Number(req.body.width);
+  const [lMin, lMax] = COURT_LIMITS.length;
+  const [wMin, wMax] = COURT_LIMITS.width;
+
+  if (Number.isNaN(length) || Number.isNaN(width)
+      || length < lMin || length > lMax || width < wMin || width > wMax) {
+    return res.status(400).json({
+      error: `Use comprimento entre ${lMin} e ${lMax} m e largura entre ${wMin} e ${wMax} m.`
+    });
   }
 
-  const db = readDb();
-  db.schedule = schedule.map((entry) => ({
-    day: String(entry.day || ''),
-    available: !!entry.available,
-    hours: String(entry.hours || '')
-  }));
-  writeDb(db);
-  res.json(db.schedule);
-});
+  res.json(await db.saveCourt({ length, width }));
+}));
+
+app.get('/api/sports', asyncHandler(async (req, res) => {
+  res.json(await db.getSports());
+}));
+
+app.post('/api/admin/sports', requireAdmin, asyncHandler(async (req, res) => {
+  const { emoji, name, description } = req.body;
+  if (!name || !String(name).trim()) {
+    return res.status(400).json({ error: 'Informe o nome do esporte.' });
+  }
+
+  const sport = await db.createSport({
+    id: crypto.randomUUID(),
+    emoji: String(emoji || '🏖️').trim().slice(0, 8),
+    name: String(name).trim(),
+    description: String(description || '').trim()
+  });
+  res.status(201).json(sport);
+}));
+
+app.delete('/api/admin/sports/:id', requireAdmin, asyncHandler(async (req, res) => {
+  const removed = await db.deleteSport(req.params.id);
+  if (!removed) return res.status(404).json({ error: 'Esporte não encontrado.' });
+  res.json({ ok: true });
+}));
 
 // ---------------------------------------------------------------
 // Localização
 // ---------------------------------------------------------------
-app.get('/api/location', (req, res) => {
-  const db = readDb();
-  res.json(db.location);
-});
+app.get('/api/location', asyncHandler(async (req, res) => {
+  res.json(await db.getLocation());
+}));
 
-app.put('/api/admin/location', requireAdmin, (req, res) => {
+app.put('/api/admin/location', requireAdmin, asyncHandler(async (req, res) => {
   const { address, lat, lng, description } = req.body;
   const latNum = Number(lat);
   const lngNum = Number(lng);
@@ -267,18 +290,37 @@ app.put('/api/admin/location', requireAdmin, (req, res) => {
     return res.status(400).json({ error: 'Preencha endereço e coordenadas válidas.' });
   }
 
-  const db = readDb();
-  db.location = {
+  res.json(await db.saveLocation({
     address,
     lat: latNum,
     lng: lngNum,
     description: description || ''
-  };
-  writeDb(db);
-  res.json(db.location);
+  }));
+}));
+
+// ---------------------------------------------------------------
+// Tratamento de erros (deve ficar depois de todas as rotas)
+// ---------------------------------------------------------------
+app.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError || err.message === 'Formato de imagem não suportado') {
+    return res.status(400).json({ error: err.message });
+  }
+  console.error(err);
+  res.status(500).json({ error: 'Erro interno do servidor.' });
 });
 
-app.listen(PORT, () => {
-  console.log(`Spot Beach rodando em http://localhost:${PORT}`);
-  console.log(`Painel do admin em http://localhost:${PORT}/admin/admin.html`);
-});
+// ---------------------------------------------------------------
+// Inicialização: conecta no MySQL, cria tabelas se preciso e sobe o servidor
+// ---------------------------------------------------------------
+db.initDb()
+  .then(() => {
+    app.listen(PORT, () => {
+    console.log(`Spot Beach rodando em http://localhost:${PORT}`);
+    console.log(`Painel do admin em http://localhost:${PORT}/admin/admin.html`);
+    });
+  })
+  .catch((err) => {
+    console.error('Não foi possível conectar ao MySQL. Confira as variáveis DB_* no .env.');
+    console.error(err.message);
+    process.exit(1);
+  });
