@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Painel do administrador — Spot Beach Bar</title>
-  <link rel="stylesheet" href="../home.css" />
+  <link rel="icon" type="image/x-icon" href="../assets/favicon.ico" />
+  <link rel="stylesheet" href="../styles.css" />
   <link rel="stylesheet" href="admin.css" />
 </head>
 <body>
@@ -156,20 +157,103 @@
       </div>
     </section>
 
-    <!-- Aba: Esportes e Lazer (agenda da quadra) -->
-    <section id="tab-esportes" class="admin-panel admin-panel--single">
-      <form id="schedule-form" class="admin-form admin-form--wide">
-        <h2>Agenda da quadra</h2>
-        <p class="admin-hint">Marque os dias em que a quadra fica disponível e informe o horário de cada um.</p>
+    <!-- Aba: Esportes e Lazer (fotos, dimensões e esportes da quadra) -->
+    <section id="tab-esportes" class="admin-panel admin-panel--single hidden">
 
-        <div id="schedule-fields" class="schedule-fields"></div>
+      <div class="admin-block">
+        <h2 class="admin-block__title">Fotos da quadra</h2>
+        <div class="admin-split">
+          <form id="quadra-form" class="admin-form" enctype="multipart/form-data" data-category="quadra">
+            <input type="hidden" id="quadra-id" />
+            <h2 id="quadra-form-title">Nova foto da quadra</h2>
 
-        <div class="admin-form__actions">
-          <button type="submit" class="btn">Salvar agenda</button>
+            <label class="field">
+              Título
+              <input type="text" id="quadra-name" placeholder="Ex: Quadra principal" required />
+            </label>
+
+            <label class="field">
+              Descrição
+              <textarea id="quadra-description" rows="3" placeholder="O que aparece na foto"></textarea>
+            </label>
+
+            <label class="field">
+              Imagem
+              <input type="file" id="quadra-image" accept="image/*" />
+            </label>
+
+            <div class="admin-form__actions">
+              <button type="submit" class="btn">Salvar foto</button>
+              <button type="button" id="quadra-cancel" class="btn btn--ghost hidden">Cancelar edição</button>
+            </div>
+            <p class="form-error" id="quadra-form-error"></p>
+          </form>
+
+          <div class="admin-list-wrap">
+            <h3>Fotos cadastradas</h3>
+            <div id="quadras-list" class="admin-list"></div>
+          </div>
         </div>
-        <p class="form-error" id="schedule-form-error"></p>
-        <p class="form-success" id="schedule-form-success"></p>
-      </form>
+      </div>
+
+      <div class="admin-block">
+        <h2 class="admin-block__title">Dimensões da quadra</h2>
+        <div class="admin-split">
+          <form id="court-form" class="admin-form">
+            <h2>Medidas</h2>
+            <p class="admin-hint">Arraste a bolinha laranja no canto da quadra ou digite as medidas. Depois clique em salvar.</p>
+
+            <label class="field">
+              Comprimento (m)
+              <input type="number" id="court-length" min="6" max="30" step="0.5" />
+            </label>
+
+            <label class="field">
+              Largura (m)
+              <input type="number" id="court-width" min="4" max="16" step="0.5" />
+            </label>
+
+            <p class="court-area" id="court-area-admin"></p>
+
+            <div class="admin-form__actions">
+              <button type="submit" class="btn">Salvar dimensões</button>
+            </div>
+            <p class="form-error" id="court-form-error"></p>
+            <p class="form-success" id="court-form-success"></p>
+          </form>
+
+          <div class="court-stage" id="court-stage-admin"></div>
+        </div>
+      </div>
+
+      <div class="admin-block">
+        <h2 class="admin-block__title">Esportes que podem ser praticados</h2>
+        <div id="sports-admin-list" class="sport-list"></div>
+
+        <form id="sport-form" class="admin-form admin-form--wide">
+          <h2>Novo esporte</h2>
+
+          <label class="field">
+            Ícone (emoji)
+            <input type="text" id="sport-emoji" value="🏖️" maxlength="8" />
+          </label>
+
+          <label class="field">
+            Esporte
+            <input type="text" id="sport-name" placeholder="Ex: Altinha" required />
+          </label>
+
+          <label class="field">
+            Descrição curta
+            <input type="text" id="sport-description" placeholder="Ex: Roda de bola livre, sem rede" />
+          </label>
+
+          <div class="admin-form__actions">
+            <button type="submit" class="btn">Adicionar esporte</button>
+          </div>
+          <p class="form-error" id="sport-form-error"></p>
+        </form>
+      </div>
     </section>
 
     <!-- Aba: Shows e Eventos -->
@@ -247,6 +331,7 @@
     </section>
   </div>
 
+  <script src="../js/court.js"></script>
   <script src="admin.js"></script>
 </body>
 </html>
