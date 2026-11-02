@@ -1,7 +1,7 @@
 // public/admin/admin.js
 // Lógica do painel: login, listar/criar/editar/excluir itens (fotos do
-// espaço, pratos, bebidas, shows), além de salvar a agenda da quadra
-// e a localização do bar — tudo via fetch para a API protegida.
+// espaço, quadra, pratos, bebidas, shows), além de salvar as dimensões da quadra,
+// os esportes praticados e a localização do bar — tudo via fetch para a API protegida.
 
 const loginScreen = document.getElementById('login-screen');
 const adminScreen = document.getElementById('admin-screen');
@@ -42,7 +42,9 @@ function showAdmin() {
   loadItems('prato', 'pratos-list');
   loadItems('bebida', 'bebidas-list');
   loadShows();
-  loadScheduleForm();
+  loadItems('quadra', 'quadras-list');
+  loadCourtForm();
+  loadSportsAdmin();
   loadLocationForm();
 }
 
@@ -192,6 +194,7 @@ showForm.addEventListener('submit', async (e) => {
 // -----------------------------------------------------------
 const ITEM_CONFIG = {
   espaco: { prefix: 'espaco', listId: 'espacos-list', icon: '🏖️', newLabel: 'Nova foto do espaço', editLabel: 'Editar foto do espaço', hasPrice: false },
+  quadra: { prefix: 'quadra', listId: 'quadras-list', icon: '🏐', newLabel: 'Nova foto da quadra', editLabel: 'Editar foto da quadra', hasPrice: false },
   prato: { prefix: 'prato', listId: 'pratos-list', icon: '🍽️', newLabel: 'Novo prato', editLabel: 'Editar prato', hasPrice: true },
   bebida: { prefix: 'bebida', listId: 'bebidas-list', icon: '🥤', newLabel: 'Nova bebida', editLabel: 'Editar bebida', hasPrice: true }
 };
@@ -310,61 +313,161 @@ async function loadItems(category, listId) {
 }
 
 // -----------------------------------------------------------
-// Agenda da quadra (Esportes e Lazer)
+// Dimensões da quadra (Esportes e Lazer)
 // -----------------------------------------------------------
-const scheduleForm = document.getElementById('schedule-form');
-const scheduleFieldsEl = document.getElementById('schedule-fields');
+const courtForm = document.getElementById('court-form');
+const courtStage = document.getElementById('court-stage-admin');
+const courtLengthInput = document.getElementById('court-length');
+const courtWidthInput = document.getElementById('court-width');
+const courtState = { length: 16, width: 8 };
 
-async function loadScheduleForm() {
-  const res = await fetch('/api/schedule');
-  const schedule = await res.json();
-
-  scheduleFieldsEl.innerHTML = schedule.map((entry, i) => `
-    <div class="schedule-field-row">
-      <span class="schedule-field-row__day">${escapeHtml(entry.day)}</span>
-      <label>
-        <input type="checkbox" data-schedule-available="${i}" ${entry.available ? 'checked' : ''} />
-        Disponível
-      </label>
-      <input
-        type="text"
-        data-schedule-hours="${i}"
-        placeholder="Ex: 14h às 22h"
-        value="${escapeHtml(entry.hours || '')}"
-      />
-    </div>
-  `).join('');
+function clampNumber(value, min, max) {
+  return Math.min(max, Math.max(min, value));
 }
 
-scheduleForm.addEventListener('submit', async (e) => {
+function renderCourtAdmin() {
+  courtStage.innerHTML = courtSvg(courtState.length, courtState.width, true);
+  document.getElementById('court-area-admin').textContent =
+    `Área: ${courtAreaText(courtState.length, courtState.width)}`;
+}
+
+function syncCourtInputs() {
+  courtLengthInput.value = courtState.length;
+  courtWidthInput.value = courtState.width;
+}
+
+async function loadCourtForm() {
+  const res = await fetch('/api/court');
+  const court = await res.json();
+  courtState.length = court.length;
+  courtState.width = court.width;
+  syncCourtInputs();
+  renderCourtAdmin();
+}
+
+// Digitar nas caixas atualiza o desenho na hora (sem reescrever o que está sendo digitado)
+courtLengthInput.addEventListener('input', () => {
+  courtState.length = clampNumber(Number(courtLengthInput.value) || COURT.LEN[0], COURT.LEN[0], COURT.LEN[1]);
+  renderCourtAdmin();
+});
+courtWidthInput.addEventListener('input', () => {
+  courtState.width = clampNumber(Number(courtWidthInput.value) || COURT.WID[0], COURT.WID[0], COURT.WID[1]);
+  renderCourtAdmin();
+});
+// Ao sair do campo, mostra o valor já ajustado aos limites
+courtLengthInput.addEventListener('change', syncCourtInputs);
+courtWidthInput.addEventListener('change', syncCourtInputs);
+
+// Arrastar a bolinha laranja
+let draggingCourt = false;
+
+courtStage.addEventListener('pointerdown', (e) => {
+  if (e.target.id === 'court-handle') {
+    draggingCourt = true;
+    e.preventDefault();
+  }
+});
+
+window.addEventListener('pointermove', (e) => {
+  if (!draggingCourt) return;
+  const svg = courtStage.querySelector('svg');
+  const point = svg.createSVGPoint();
+  point.x = e.clientX;
+  point.y = e.clientY;
+  const p = point.matrixTransform(svg.getScreenCTM().inverse());
+
+  // arredonda para múltiplos de 0,5 m
+  courtState.length = clampNumber(Math.round(((p.x - COURT.X0) / COURT.P) * 2) / 2, COURT.LEN[0], COURT.LEN[1]);
+  courtState.width = clampNumber(Math.round(((p.y - COURT.Y0) / COURT.P) * 2) / 2, COURT.WID[0], COURT.WID[1]);
+  syncCourtInputs();
+  renderCourtAdmin();
+});
+
+window.addEventListener('pointerup', () => { draggingCourt = false; });
+
+courtForm.addEventListener('submit', async (e) => {
   e.preventDefault();
-  const errorEl = document.getElementById('schedule-form-error');
-  const successEl = document.getElementById('schedule-form-success');
+  const errorEl = document.getElementById('court-form-error');
+  const successEl = document.getElementById('court-form-success');
   errorEl.textContent = '';
   successEl.textContent = '';
 
-  const dayEls = scheduleFieldsEl.querySelectorAll('.schedule-field-row');
-  const schedule = Array.from(dayEls).map((row) => {
-    const dayLabel = row.querySelector('.schedule-field-row__day').textContent;
-    const available = row.querySelector('[data-schedule-available]').checked;
-    const hours = row.querySelector('[data-schedule-hours]').value;
-    return { day: dayLabel, available, hours };
-  });
-
-  const res = await fetch('/api/admin/schedule', {
+  const res = await fetch('/api/admin/court', {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ schedule })
+    body: JSON.stringify({ length: courtState.length, width: courtState.width })
   });
   const data = await res.json();
 
   if (!res.ok) {
-    errorEl.textContent = data.error || 'Não foi possível salvar a agenda.';
+    errorEl.textContent = data.error || 'Não foi possível salvar as dimensões.';
     return;
   }
 
-  successEl.textContent = 'Agenda salva com sucesso!';
+  successEl.textContent = 'Dimensões salvas com sucesso!';
   setTimeout(() => { successEl.textContent = ''; }, 3000);
+});
+
+// -----------------------------------------------------------
+// Esportes praticados na quadra
+// -----------------------------------------------------------
+const sportForm = document.getElementById('sport-form');
+
+async function loadSportsAdmin() {
+  const list = document.getElementById('sports-admin-list');
+  const res = await fetch('/api/sports');
+  const sports = await res.json();
+
+  if (!sports.length) {
+    list.innerHTML = '<p class="admin-empty">Nenhum esporte cadastrado ainda.</p>';
+    return;
+  }
+
+  list.innerHTML = sports.map((sport) => `
+    <div class="sport-item">
+      <span class="sport-item__emoji">${escapeHtml(sport.emoji)}</span>
+      <div>
+        <span class="sport-item__name">${escapeHtml(sport.name)}</span>
+        <p class="sport-item__desc">${escapeHtml(sport.description || '')}</p>
+      </div>
+      <button type="button" class="sport-item__remove" data-remove-sport="${sport.id}"
+              aria-label="Remover ${escapeHtml(sport.name)}">✕</button>
+    </div>
+  `).join('');
+
+  list.querySelectorAll('[data-remove-sport]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      if (!confirm('Remover este esporte? Essa ação não pode ser desfeita.')) return;
+      await fetch(`/api/admin/sports/${btn.dataset.removeSport}`, { method: 'DELETE' });
+      loadSportsAdmin();
+    });
+  });
+}
+
+sportForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const errorEl = document.getElementById('sport-form-error');
+  errorEl.textContent = '';
+
+  const res = await fetch('/api/admin/sports', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      emoji: document.getElementById('sport-emoji').value,
+      name: document.getElementById('sport-name').value,
+      description: document.getElementById('sport-description').value
+    })
+  });
+  const data = await res.json();
+
+  if (!res.ok) {
+    errorEl.textContent = data.error || 'Não foi possível adicionar o esporte.';
+    return;
+  }
+
+  sportForm.reset();
+  document.getElementById('sport-emoji').value = '🏖️';
+  loadSportsAdmin();
 });
 
 // -----------------------------------------------------------
